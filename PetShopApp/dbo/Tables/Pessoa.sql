@@ -1,0 +1,30 @@
+﻿CREATE TABLE [dbo].[Pessoa] (
+    [codigo]   BIGINT         IDENTITY (1, 1) NOT NULL,
+    [nome]     NVARCHAR (255) NOT NULL,
+    [dataNasc] DATE           NULL,
+    [salario]  MONEY          NOT NULL,
+    [email]    NVARCHAR (150) NULL,
+    [estatus]  INT            DEFAULT ('1') NOT NULL,
+    CONSTRAINT [PK_PESSOA] PRIMARY KEY CLUSTERED ([codigo] ASC),
+    UNIQUE NONCLUSTERED ([email] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [INDICE1]
+    ON [dbo].[Pessoa]([nome] ASC);
+
+
+GO
+CREATE   TRIGGER tgTutorAlterado
+ON PESSOA
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+	IF EXISTS (SELECT * FROM INSERTED) AND EXISTS (SELECT * FROM DELETED)
+		PRINT ''
+	ELSE IF EXISTS (SELECT * FROM INSERTED)
+		EXECUTE prListaTutores @name='Maria'
+	ELSE IF EXISTS (SELECT * FROM DELETED)
+		PRINT ''
+END
